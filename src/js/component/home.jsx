@@ -21,6 +21,36 @@ const Home = () => {
 			});
 	};
 
+	const saveTask = (e) => {
+		let newTodoArray = [
+			...todoArray,
+			{
+				label: inputValue,
+				done: false,
+			},
+		];
+		fetch(
+			"https://assets.breatheco.de/apis/fake/todos/user/danielpabraham",
+			{
+				method: "PUT",
+				body: JSON.stringify(newTodoArray),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		)
+			.then((res) => {
+				if (!res.ok) throw Error(res.statusText);
+				return res.json();
+			})
+			.then((response) => {
+				console.log("Success:", response);
+				getData();
+			})
+			.catch((error) => console.error(error));
+		setInputValue("");
+	};
+
 	let mappedTodoArray = todoArray.map((task, index) => {
 		return (
 			<li>
@@ -33,12 +63,52 @@ const Home = () => {
 	});
 
 	function removeTask(i) {
-		let filtered = todoArray.filter((task, index) => i != index);
-
+		let filtered = todoArray.filter((task, index) => {
+			i != index;
+			return i != index;
+		});
+		fetch(
+			"https://assets.breatheco.de/apis/fake/todos/user/danielpabraham",
+			{
+				method: "PUT",
+				body: JSON.stringify(filtered),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		)
+			.then((res) => {
+				if (!res.ok) throw Error(res.statusText);
+				return res.json();
+			})
+			.then((response) => {
+				console.log("Success:", response);
+				getData();
+			})
+			.catch((error) => console.error(error));
 		setTodoArray(filtered);
 	}
 
 	function removeAll() {
+		fetch(
+			"https://assets.breatheco.de/apis/fake/todos/user/danielpabraham",
+			{
+				method: "PUT",
+				body: JSON.stringify([""]),
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		)
+			.then((res) => {
+				if (!res.ok) throw Error(res.statusText);
+				return res.json();
+			})
+			.then((response) => {
+				console.log("Success:", response);
+				getData();
+			})
+			.catch((error) => console.error(error));
 		setTodoArray([]);
 	}
 
@@ -57,17 +127,15 @@ const Home = () => {
 					type="text"
 					placeholder="..."
 					value={inputValue}
-					onChange={(e) => setInputValue(e.target.value)}
+					onChange={(e) =>
+						setInputValue(
+							e.target.value.charAt(0).toUpperCase() +
+								e.target.value.slice(1).toLowerCase()
+						)
+					}
 					onKeyUp={(e) => {
 						if (e.key === "Enter") {
-							setTodoArray([
-								...todoArray,
-								{
-									label: inputValue,
-									done: false,
-								},
-							]);
-							setInputValue("");
+							saveTask(e);
 						}
 					}}
 				/>
